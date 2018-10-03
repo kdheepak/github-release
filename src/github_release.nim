@@ -57,8 +57,21 @@ proc remove(token: string, owner: string, repo: string, tag: string): int =
     except:
         raise
 
+proc getLogs(pretty: bool = true): string =
+    var tag1 = execProcess("git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)").strip()
+    var tag2 = execProcess("git tag -l --points-at HEAD").strip()
+    let log = execProcess(&"git log {tag1}..{tag2} --pretty=short --oneline --graph --decorate  --format=\"%C(auto) %h %s\"").strip()
+    return log
+
 proc create(token: string, owner: string, repo: string, tag: string, target_commit: string = "master", name: string = "", body: string = "", draft: bool = false, prerelease: bool = false): int =
     try:
+        if body == "":
+            let log = getLogs(true)
+            body = """
+            # Changelog
+
+            {log}
+            """
         var g = newGithub(token, owner, repo)
         var body = %*{
             "tag_name": tag,
@@ -109,9 +122,7 @@ proc upload(token: string, owner: string, repo: string, file: string, tag: strin
         raise
 
 proc logs(pretty: bool = true): int =
-    var tag1 = execProcess("git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)").strip()
-    var tag2 = execProcess("git tag -l --points-at HEAD").strip()
-    let log = execProcess(&"git log {tag1}..{tag2} --pretty=short --oneline --graph --decorate  --format=\"%C(auto) %h %s\"").strip()
+    let log = getLogs(pretty)
     echo log
     return 0
 
