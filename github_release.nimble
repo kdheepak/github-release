@@ -7,6 +7,7 @@ license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
 bin           = @["github_release"]
+skipExt       = @["nim"]
 
 # Dependencies
 
