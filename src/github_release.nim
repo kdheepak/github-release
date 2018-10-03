@@ -163,17 +163,21 @@ proc logs(pretty: bool = true): int =
     echo log
     return 0
 
+proc version(pretty: bool = true): int =
+    const version_string = staticExec("git describe --tags HEAD")
+    echo version_string
+    return 0
 
 when isMainModule:
 
     import cligen
     import os
-    const version_string = staticExec("git rev-parse --verify HEAD --short")
 
     dispatchMulti(
         [ upload ],
         [ create ],
         [ remove ],
         [ logs ],
-        # version = ("version", "github-release (v0.1.0-alpha " & version_string & ")")
+        [ version ],
+        # version = ("version", "github-release (" & version_string & ")")
     )
