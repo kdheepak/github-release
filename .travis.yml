@@ -84,9 +84,3 @@ after_deploy:
 notifications:
   email: false
 
-branches:
-  only:
-    - master
-
-
-
