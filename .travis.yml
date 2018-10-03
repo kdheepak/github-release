@@ -64,7 +64,10 @@ after_success:
   # - ./github-release release --token=$GITHUB_TOKEN --owner=kdheepak --repo=travis-nim --title=$TRAVIS_TAG --tag=$TRAVIS_TAG
   - nimble install
   - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=./dist/github-release-$BUILD-amd64.zip; else ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=./dist/github-release-$BUILD-amd64.tar.xz; fi
-
+  - | # Only release on tags
+  if [ -n "$TRAVIS_TAG" ]; then
+    if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=$TRAVIS_TAG --file=./dist/github-release-$BUILD-amd64.zip; else ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=$TRAVIS_TAG --file=./dist/github-release-$BUILD-amd64.tar.xz; fi
+  fi
 notifications:
   email: false
 
