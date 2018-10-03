@@ -13,3 +13,15 @@ skipExt       = @["nim"]
 
 requires "nim >= 0.19.0", "cligen#head"
 
+when defined(nimdistros):
+    import distros
+    if detectOs(Ubuntu):
+        foreignDep "libssl-dev"
+    else:
+        foreignDep "openssl"
+
+task run, "run":
+
+    exec("nimble build")
+    exec("./bin/github_release --version")
+
