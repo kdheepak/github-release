@@ -60,28 +60,61 @@ proc remove(token: string, owner: string, repo: string, tag: string): int =
 proc getLogs(pretty: bool = true): string =
     var tag1 = execProcess("git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)").strip()
     var tag2 = execProcess("git tag -l --points-at HEAD").strip()
-    let log = execProcess(&"git log {tag1}..{tag2} --pretty=short --oneline --graph --decorate  --format=\"%C(auto) %h %s\"").strip()
+    let log = execProcess(&"git log {tag1}..{tag2} --pretty=short --oneline --decorate  --format=\"%C(auto) %h %s\"").strip()
     return log
+
+proc formatLogs(log: string): string =
+
+    var lines : seq[string] = @[]
+    for line in splitLines(log, keep_eol = true):
+        lines.add(line.strip())
+        lines.add("\n")
+
+    var httpUrl = execProcess("git config --get remote.origin.url").strip()
+    httpUrl = httpUrl.replace(":", "/")
+    httpUrl = httpUrl.replace("git@", "https://")
+    if httpUrl[^4..^1] == ".git":
+        httpUrl = httpUrl[0..^5]
+    echo httpUrl
+
+    var log = join(lines).strip()
+
+    lines = @[]
+    for line in splitLines(log, keep_eol = true):
+        var data = line.split()
+        let commithash = fmt"[`{data[0]}`]({httpUrl}/commit/{data[0]})"
+        let message = join(data[1..^1], " ")
+        lines.add(commithash)
+        lines.add(" ")
+        lines.add(message)
+        lines.add("\n")
+    log = join(lines).strip()
+    return log
+
 
 proc create(token: string, owner: string, repo: string, tag: string, target_commit: string = "master", name: string = "", body: string = "", draft: bool = false, prerelease: bool = false): int =
     try:
+        var body_string: string = ""
         if body == "":
-            let log = getLogs(true)
-            var body = """
+            let log = getLogs(true).formatLogs
+            body_string = &"""
             # Changelog
 
             {log}
             """
             var tmp_body = ""
-            for line in splitLines(body):
+            for line in splitLines(body_string, keep_eol = true):
                 tmp_body.add(line.strip())
-            body = join(tmp_body)
+                tmp_body.add("\n")
+            body_string = join(tmp_body)
+        else:
+            body_string = body
         var g = newGithub(token, owner, repo)
         var body = %*{
             "tag_name": tag,
             "target_commitish": target_commit,
             "name": (if name == "": tag else: name),
-            "body": body,
+            "body": body_string,
             "draft": draft,
             "prerelease": prerelease
         }
