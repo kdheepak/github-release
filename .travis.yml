@@ -50,6 +50,7 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then export CC=x86_64-w64-mingw32-gcc; fi
 
 script:
+  - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then export GITHUB_RELEASE_FILENAME="./dist/github-release-$BUILD-amd64.zip"; else export GITHUB_RELEASE_FILENAME="./dist/github-release-$BUILD-amd64.tar.xz"; fi
   - mkdir -p dist
   # pcre64.dll/pcre32.dll must be distributed with the Windows executable
   # - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then curl -O https://nim-lang.org/download/dlls.zip; unzip dlls.zip; fi
@@ -58,13 +59,25 @@ script:
   - mkdir -p github-release-$BUILD-amd64
   - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then mv bin/github_release github-release-$BUILD-amd64/github-release.exe; else cp bin/github_release github-release-$BUILD-amd64/github-release; fi
   # - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then mv pcre64.dll github-release-$BUILD-amd64; fi
-  - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then zip -r9 dist/github-release-$BUILD-amd64.zip github-release-$BUILD-amd64; else tar cfJ dist/github-release-$BUILD-amd64.tar.xz github-release-$BUILD-amd64; fi
+  - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then zip -r9 $GITHUB_RELEASE_FILENAME github-release-$BUILD-amd64; else tar cfJ $GITHUB_RELEASE_FILENAME github-release-$BUILD-amd64; fi
 
 after_success:
   # - ./github-release release --token=$GITHUB_TOKEN --owner=kdheepak --repo=travis-nim --title=$TRAVIS_TAG --tag=$TRAVIS_TAG
   - nimble install
-  - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=./dist/github-release-$BUILD-amd64.zip; else ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=./dist/github-release-$BUILD-amd64.tar.xz; fi
-  - if [ -n "$TRAVIS_TAG" ]; then if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=$TRAVIS_TAG --file=./dist/github-release-$BUILD-amd64.zip; else ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=$TRAVIS_TAG --file=./dist/github-release-$BUILD-amd64.tar.xz; fi; fi
+  - ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=$GITHUB_RELEASE_FILENAME
+
+deploy:
+  - skip_cleanup: true
+    on: { tags: true }
+    provider: script
+    script: >-
+      ./bin/github_release upload
+      --token "$GITHUB_TOKEN"
+      --owner kdheepak
+      --repo github-release
+      --tag "$TRAVIS_TAG"
+      --file "$GITHUB_RELEASE_FILENAME"
+
 notifications:
   email: false
 
