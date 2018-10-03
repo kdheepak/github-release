@@ -117,5 +117,5 @@ when isMainModule:
         [ upload ],
         [ create ],
         [ delete_release ],
-        # version = ("version", "github-release (v0.1.0-dev " & version_string & ")")
+        # version = ("version", "github-release (v0.1.0-alpha " & version_string & ")")
     )
