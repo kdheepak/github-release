@@ -1,6 +1,9 @@
+import strutils
 import strformat
 import httpclient
 import json
+import mimetypes
+import ospaths
 
 type
     Github = ref object
@@ -16,8 +19,15 @@ proc request(g: Github, url: string,
               headers: HttpHeaders = nil): string =
     var client = newHttpClient()
     client.headers = newHttpHeaders({ "Authorization": fmt"token {g.token}" })
-    var url = fmt"https://api.github.com/repos/{g.owner}/{g.repo}" & url
-    let response = client.request(url, httpMethod = httpMethod, body = body, headers = headers)
+    var realurl: string
+    if url.startsWith("/"):
+        realurl = fmt"https://api.github.com/repos/{g.owner}/{g.repo}" & url
+    else:
+        realurl = url
+    let response = client.request(realurl, httpMethod = httpMethod, body = body, headers = headers)
+    # echo response.status
+    # echo response.body
+    # echo response.headers
     return response.body
 
 proc get_release_by_tag_name(g: Github, tag: string): string =
@@ -46,7 +56,21 @@ proc create(token: string, owner: string, repo: string, tag: string, target_comm
 
 proc upload(token: string, owner: string, repo: string, file: string, tag: string): int =
     var g = newGithub(token, owner, repo)
-    echo g.request("/releases")
+    let release = parseJson(g.get_release_by_tag_name(tag))
+    let release_id = release["id"]
+    var upload_url = $release["upload_url"]
+    upload_url = upload_url.replace("{?name,label}", "").strip(chars={'"'})
+    let file_name = fmt"{file.splitFile.name}{file.splitFile.ext}"
+    var url = fmt"{upload_url}?name={file_name}"
+    var headers= {
+        "Content-Type": "application/zip",
+        "name": file_name,
+        "label": file_name,
+    }.newHttpHeaders
+    var mimes = newMimetypes()
+    var body = file.readFile
+    echo url
+    echo g.request(url, httpMethod = "post", body = $body, headers = headers)
 
 
 when isMainModule:
