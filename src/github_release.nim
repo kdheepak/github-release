@@ -102,7 +102,7 @@ proc upload(token: string, owner: string, repo: string, file: string, tag: strin
         discard g.request(url, httpMethod = "post", body = $body, headers = headers)
         echo "Success!"
     except GithubError as e:
-        echo fmt"[Error] Unable to upload {file} to {tag}: " & e.body["message"].getStr() & ". Perhaps the file already exists?"
+        echo fmt"[Error] Unable to upload {file} to {tag}. Ensure that the tag already exists and the asset doesn't"
         return -1
     except:
         raise
