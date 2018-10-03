@@ -72,6 +72,10 @@ proc create(token: string, owner: string, repo: string, tag: string, target_comm
 
             {log}
             """
+            var tmp_body = ""
+            for line in splitLines(body):
+                tmp_body.add(line.strip())
+            body = join(tmp_body)
         var g = newGithub(token, owner, repo)
         var body = %*{
             "tag_name": tag,
