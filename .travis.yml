@@ -53,7 +53,7 @@ script:
   - mkdir -p dist
   # pcre64.dll/pcre32.dll must be distributed with the Windows executable
   # - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then curl -O https://nim-lang.org/download/dlls.zip; unzip dlls.zip; fi
-  - nimble install -y -d:release --passc:"-flto" $CROSS
+  - nimble build -y -d:release --passc:"-flto" $CROSS
   # - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then strip bin/github_release pcre64.dll; else strip bin/github_release; fi
   - mkdir -p github-release-$BUILD-amd64
   - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then cp bin/github_release github-release-$BUILD-amd64/github-release.exe; else cp bin/github_release github-release-$BUILD-amd64/github-release; fi
