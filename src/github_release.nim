@@ -67,7 +67,7 @@ proc create(token: string, owner: string, repo: string, tag: string, target_comm
     try:
         if body == "":
             let log = getLogs(true)
-            body = """
+            var body = """
             # Changelog
 
             {log}
