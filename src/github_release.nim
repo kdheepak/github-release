@@ -4,6 +4,7 @@ import httpclient
 import json
 import mimetypes
 import ospaths
+import osproc
 
 type
     Github = ref object
@@ -107,6 +108,14 @@ proc upload(token: string, owner: string, repo: string, file: string, tag: strin
     except:
         raise
 
+proc logs(pretty: bool = true): int =
+    var tag1 = execProcess("git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)").strip()
+    var tag2 = execProcess("git tag -l --points-at HEAD").strip()
+    let log = execProcess(&"git log {tag1}..{tag2} --pretty=short --oneline --graph --decorate  --format=\"%C(auto) %h %s\"").strip()
+    echo log
+    return 0
+
+
 when isMainModule:
 
     import cligen
@@ -117,5 +126,6 @@ when isMainModule:
         [ upload ],
         [ create ],
         [ remove ],
+        [ logs ],
         # version = ("version", "github-release (v0.1.0-alpha " & version_string & ")")
     )
