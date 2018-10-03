@@ -42,7 +42,7 @@ proc get_release_by_tag_name(g: Github, tag: string): JsonNode =
     let url = fmt"/releases/tags/{tag}"
     return parseJson(g.request(url))
 
-proc delete_release(token: string, owner: string, repo: string, tag: string): int =
+proc remove(token: string, owner: string, repo: string, tag: string): int =
     try:
         var g = newGithub(token, owner, repo)
         let release_id = g.get_release_by_tag_name(tag)["id"].getInt()
@@ -116,6 +116,6 @@ when isMainModule:
     dispatchMulti(
         [ upload ],
         [ create ],
-        [ delete_release ],
+        [ remove ],
         # version = ("version", "github-release (v0.1.0-alpha " & version_string & ")")
     )
