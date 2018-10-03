@@ -8,7 +8,7 @@ when isMainModule:
     import os
     const version_string = staticExec("git rev-parse --verify HEAD --short")
 
-    dispatchGen(main, version = ("version", "glm (v0.1.0-dev " & versionString & ")"))
+    dispatchGen(main, version = ("version", "github-release (v0.1.0-dev " & versionString & ")"))
 
     if paramCount() == 0:
         discard dispatch_main(@["--version"])
