@@ -61,8 +61,9 @@ script:
   - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then zip -r9 dist/github-release-$BUILD-amd64.zip github-release-$BUILD-amd64; else tar cfJ dist/github-release-$BUILD-amd64.tar.xz github-release-$BUILD-amd64; fi
 
 after_success:
-    # - ./github-release release --token=$GITHUB_TOKEN --owner=kdheepak --repo=travis-nim --title=$TRAVIS_TAG --tag=$TRAVIS_TAG
-  - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=github-release-$BUILD-amd64.zip; else ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=github-release-$BUILD-amd64.tar.xz; fi
+  # - ./github-release release --token=$GITHUB_TOKEN --owner=kdheepak --repo=travis-nim --title=$TRAVIS_TAG --tag=$TRAVIS_TAG
+  - ls
+  - if [ $TRAVIS_OS_NAME == linux -a $BUILD == windows ]; then ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=./dist/github-release-$BUILD-amd64.zip; else ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=./dist/github-release-$BUILD-amd64.tar.xz; fi
 
 notifications:
   email: false
