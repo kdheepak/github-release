@@ -27,7 +27,7 @@ where subcommand syntaxes are as follows:
       -d, --draft       bool    false     set draft
       -p, --prerelease  bool    false     set prerelease
 
-  delete_release [required&optional-params]
+  remove [required&optional-params]
     Options(opt-arg sep :|=|spc):
       -h, --help                       write this help to stdout
       -t=, --token=  string  REQUIRED  set token
