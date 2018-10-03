@@ -1,5 +1,8 @@
 dist: trusty
 sudo: false
+cache:
+    directories:
+        - /home/travis/.nimble/
 
 language: c
 
