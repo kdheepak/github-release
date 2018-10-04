@@ -64,15 +64,8 @@ script:
 after_success:
   - nimble install
   - ./bin/github_release upload --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=releases --file=$GITHUB_RELEASE_FILENAME
-
-deploy:
-  - skip_cleanup: true
-    on:
-        tags: true
-    provider: script
-    script:
-        - ./bin/github_release create --token "$GITHUB_TOKEN" --owner kdheepak --repo github-release --tag "$TRAVIS_TAG"
-        - ./bin/github_release upload --token "$GITHUB_TOKEN" --owner kdheepak --repo github-release --tag "$TRAVIS_TAG" --file "$GITHUB_RELEASE_FILENAME"
+  - if ([ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ]) && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./bin/github_release create --token "$GITHUB_TOKEN" --owner kdheepak --repo github-release --tag "$TRAVIS_TAG" fi
+  - if ([ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ]) && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./bin/github_release upload --token "$GITHUB_TOKEN" --owner kdheepak --repo github-release --tag "$TRAVIS_TAG" --file "$GITHUB_RELEASE_FILENAME" fi
 
 notifications:
   email: false
