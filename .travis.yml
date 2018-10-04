@@ -69,17 +69,15 @@ deploy:
   - skip_cleanup: true
     on:
         tags: true
-    provider: releases
-    api_key: "$GITHUB_TOKEN"
-
-after_deploy:
-  - ./bin/github_release create --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=$TRAVIS_TAG
-  - ./bin/github_release upload
-      --token "$GITHUB_TOKEN"
-      --owner kdheepak
-      --repo github-release
-      --tag "$TRAVIS_TAG"
-      --file "$GITHUB_RELEASE_FILENAME"
+    provider: script
+    script:
+        - ./bin/github_release create --token=$GITHUB_TOKEN --owner=kdheepak --repo=github-release --tag=$TRAVIS_TAG
+        - ./bin/github_release upload
+            --token "$GITHUB_TOKEN"
+            --owner kdheepak
+            --repo github-release
+            --tag "$TRAVIS_TAG"
+            --file "$GITHUB_RELEASE_FILENAME"
 
 notifications:
   email: false
