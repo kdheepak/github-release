@@ -65,47 +65,59 @@ github-release upload -t $GITHUB_TOKEN -o kdheepak -r github-release --tag v0.1.
 ### # Documentation
 
 ```bash
-Usage:
-  github-release subcommand [subcommand-opts & args]
-where subcommand syntaxes are as follows:
+Usage: github-release [global options] <verb> [verb options]
 
-  upload [required&optional-params]
-    Options(opt-arg sep :|=|spc):
-      -h, --help                       write this help to stdout
-      -t=, --token=  string  REQUIRED  set token
-      -o=, --owner=  string  REQUIRED  set owner
-      -r=, --repo=   string  REQUIRED  set repo
-      -f=, --file=   string  REQUIRED  set file
-      --tag=         string  REQUIRED  set tag
+Global options:
+        -h, --help           Show this help
+        -v, --verbose        Be verbose
+        -q, --quiet          Do not print anything, even errors (except if --verbose is specified)
+            --version        Print version
 
-  create [required&optional-params]
-    Options(opt-arg sep :|=|spc):
-      -h, --help                          write this help to stdout
-      -t=, --token=     string  REQUIRED  set token
-      -o=, --owner=     string  REQUIRED  set owner
-      -r=, --repo=      string  REQUIRED  set repo
-      --tag=            string  REQUIRED  set tag
-      --target_commit=  string  "master"  set target_commit
-      -n=, --name=      string  ""        set name
-      -b=, --body=      string  ""        set body
-      -d, --draft       bool    false     set draft
-      -p, --prerelease  bool    false     set prerelease
-
-  remove [required&optional-params]
-    Options(opt-arg sep :|=|spc):
-      -h, --help                       write this help to stdout
-      -t=, --token=  string  REQUIRED  set token
-      -o=, --owner=  string  REQUIRED  set owner
-      -r=, --repo=   string  REQUIRED  set repo
-      --tag=         string  REQUIRED  set tag
-
-  logs [optional-params]
-    Options(opt-arg sep :|=|spc):
-      -h, --help                write this help to stdout
-      -p, --pretty  bool  true  set pretty
-
-  version [optional-params]
-    Options(opt-arg sep :|=|spc):
-      -h, --help                write this help to stdout
-      -p, --pretty  bool  true  set pretty
+Verbs:
+    delete:
+        -s, --security-token Github token (required if $GITHUB_TOKEN not set)
+        -u, --user           Github repo user or organisation (required if $GITHUB_USER not set)
+        -r, --repo           Github repo (required if $GITHUB_REPO not set)
+        -t, --tag            Git tag of release to delete (*)
+    download:
+        -s, --security-token Github token ($GITHUB_TOKEN if set). required if repo is private.
+        -u, --user           Github repo user or organisation (required if $GITHUB_USER not set)
+        -r, --repo           Github repo (required if $GITHUB_REPO not set)
+        -l, --latest         Download latest release (required if tag is not specified)
+        -t, --tag            Git tag to download from (required if latest is not specified) (*)
+        -n, --name           Name of the file (*)
+    edit:
+        -s, --security-token Github token (required if $GITHUB_TOKEN not set)
+        -u, --user           Github repo user or organisation (required if $GITHUB_USER not set)
+        -r, --repo           Github repo (required if $GITHUB_REPO not set)
+        -t, --tag            Git tag to edit the release of (*)
+        -n, --name           New name of the release (defaults to tag)
+        -d, --description    New release description, use - for reading a description from stdin (defaults to tag)
+            --draft          The release is a draft
+        -p, --pre-release    The release is a pre-release
+    info:
+        -s, --security-token Github token ($GITHUB_TOKEN if set). required if repo is private.
+        -u, --user           Github repo user or organisation (required if $GITHUB_USER not set)
+        -r, --repo           Github repo (required if $GITHUB_REPO not set)
+        -t, --tag            Git tag to query (optional)
+        -j, --json           Emit info as JSON instead of text
+    release:
+        -s, --security-token Github token (required if $GITHUB_TOKEN not set)
+        -u, --user           Github repo user or organisation (required if $GITHUB_USER not set)
+        -r, --repo           Github repo (required if $GITHUB_REPO not set)
+        -t, --tag            Git tag to create a release from (*)
+        -n, --name           Name of the release (defaults to tag)
+        -d, --description    Release description, use - for reading a description from stdin (defaults to tag)
+        -c, --target         Commit SHA or branch to create release of (defaults to the repository default branch)
+            --draft          The release is a draft
+        -p, --pre-release    The release is a pre-release
+    upload:
+        -s, --security-token Github token (required if $GITHUB_TOKEN not set)
+        -u, --user           Github repo user or organisation (required if $GITHUB_USER not set)
+        -r, --repo           Github repo (required if $GITHUB_REPO not set)
+        -t, --tag            Git tag to upload to (*)
+        -n, --name           Name of the file (*)
+        -l, --label          Label (description) of the file
+        -f, --file           File to upload (use - for stdin) (*)
+        -R, --replace        Replace asset with same name if it already exists (WARNING: not atomic, failure to upload will remove the original asset too)
 ```
